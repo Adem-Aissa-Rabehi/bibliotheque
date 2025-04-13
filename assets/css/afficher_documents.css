@@ -1,0 +1,20 @@
+/* Styles pour le tableau */
+.table {
+    margin-top: 20px;
+}
+.table th, .table td {
+    vertical-align: middle;
+}
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Styles pour les filtres */
+#fieldsFilters label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+#fieldsFilters select {
+    width: auto;
+    margin-bottom: 10px;
+}

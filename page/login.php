@@ -1,24 +1,23 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion Admin</title>
-</head>
-<body>
-    <div class="login-container">
-        <h2>Connexion Admin</h2>
-        <form action="../assets/php/admin_login.php" method="POST">
-            <div>
-                <label for="name">Nom d'utilisateur</label>
-                <input type="text" id="name" name="name" required>
+<?php include 'SIde-barre.php'; ?>
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="text-center">Connexion Admin</h2>
+                    <form action="../assets/php/admin_login.php" method="POST">
+                        <div class="form-group">
+                            <label for="name">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Se connecter</button>
+                    </form>
+                </div>
             </div>
-            <div>
-                <label for="password">Mot de passe</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Se connecter</button>
-        </form>
+        </div>
     </div>
-</body>
-</html>
+</div>

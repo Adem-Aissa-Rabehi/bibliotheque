@@ -4,24 +4,31 @@ session_start();
 header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
-
     $name = $_POST['name'] ?? '';
     $password = $_POST['password'] ?? '';
-    
-   
 
-    $pdo = getDatabaseConnection();
+    if (empty($name) || empty($password)) {
+        echo json_encode(['success' => false, 'message' => "Nom d'utilisateur ou mot de passe manquant."]);
+        exit;
+    }
 
-    $query = "SELECT * FROM admins WHERE name = :name";
-    $stmt = $pdo->prepare($query);
-    $stmt->bindParam(':name', $name);
-    $stmt->execute();
+    try {
+        $pdo = getDatabaseConnection();
+        $query = "SELECT * FROM admins WHERE name = :name";
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([':name' => $name]);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
-    if($admin && ($password==$admin['password'])) {
-        $_SESSION['admin_id'] = $admin['id'];
-        header('Location: ../../page/ajouter_type.php');
-        exit; 
-}}
+        if ($admin && password_verify($password, $admin['password'])) {
+            $_SESSION['admin_id'] = $admin['id'];
+            echo json_encode(['success' => true, 'message' => "Connexion réussie."]);
+        } else {
+            echo json_encode(['success' => false, 'message' => "Nom d'utilisateur ou mot de passe incorrect."]);
+        }
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => "Erreur de base de données : " . $e->getMessage()]);
+    }
+} else {
+    echo json_encode(['success' => false, 'message' => "Méthode non autorisée."]);
+}
 ?>

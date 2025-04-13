@@ -1,34 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../assets/css/type.css" >
-    <title>Ajouter Type </title>
-</head>
-<body>
-    <!-- Inclure la barre latérale -->
-    <?php include 'SIde-barre.php'; ?>
-
-    <div class="content">
-        <h1>Ajouter un Type de Document</h1>
-
-        <!-- Formulaire pour ajouter un type de document -->
-        <form id="addTypeForm" action="#" method="POST">
+<?php include 'SIde-barre.php'; ?>
+<div class="container-fluid">
+    <h1 class="mt-4">Ajouter un Type de Document</h1>
+    <form id="addTypeForm" action="../assets/php/ajouter_type.php" method="POST">
+        <div class="form-group">
             <label for="name">Nom du type :</label>
-            <input type="text" id="name" name="name" required>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
 
-            <h2>Champs associés</h2>
-            
-            <div id="fieldsContainer">
-                <!-- Les champs dynamiques seront ajoutés par JavaScript -->
-            </div>
-            <button type="button" id="addField">Ajouter un champ</button>
+        <h4 class="mt-4">Champs associés</h4>
+        <div id="fieldsContainer"></div>
 
-            <br><br>
-            <button type="submit">Ajouter le Type</button>
-        </form>
-    </div>
-</body>
+        <button type="button" id="addField" class="btn btn-secondary mb-3">Ajouter un champ</button>
+        <button type="submit" class="btn btn-primary">Ajouter le Type</button>
+    </form>
+</div>
+
+<!-- Scripts -->
 <script src="../assets/js/ajouter_types.js"></script>
-</html>

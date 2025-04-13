@@ -5,65 +5,62 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Charger les types de documents
     const loadTypes = () => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "../assets/php/get_document_types.php", true);
-        xhr.onload = () => {
-            if (xhr.status === 200) {
-                const types = JSON.parse(xhr.responseText);
+        fetch("../assets/php/get_document_types.php")
+            .then(response => response.json())
+            .then(types => {
                 types.forEach(type => {
                     const option = document.createElement("option");
                     option.value = type.id;
                     option.textContent = type.name;
                     typeSelect.appendChild(option);
                 });
-            }
-        };
-        xhr.send();
+            })
+            .catch(error => console.error("Erreur lors du chargement des types :", error));
     };
 
     // Charger les documents
     const loadDocuments = (typeId = "", filters = {}) => {
-        const xhr = new XMLHttpRequest();
         let url = `../assets/php/get_document.php?type=${typeId}`;
         Object.keys(filters).forEach(key => {
             url += `&${key}=${filters[key]}`;
         });
 
-        xhr.open("GET", url, true);
-        xhr.onload = () => {
-            if (xhr.status === 200) {
-                const documents = JSON.parse(xhr.responseText);
+        fetch(url)
+            .then(response => response.json())
+            .then(documents => {
                 documentsTable.innerHTML = "";
                 documents.forEach(doc => {
-                    const row = `<tr>
-                        <td>${doc.id}</td>
-                        <td>${doc.type}</td>
-                        <td>${doc.publication_date}</td>
-                        <td><a href="../uploads/${doc.document_path}" target="_blank">Voir</a></td>
-                        <td>
-                            <button class="delete-btn" data-id="${doc.id}" data-path="../uploads/${doc.document_path}">Supprimer</button>
-                        </td>
-                    </tr>`;
+                    const row = `
+                        <tr>
+                            <td>${doc.type}</td>
+                            <td>${doc.publication_date}</td>
+                            <td>
+                                <a href="../uploads/${doc.document_path}" target="_blank">Voir</a>
+                            </td>
+                            <td>
+                                <button class="btn btn-danger delete-btn" data-id="${doc.id}" data-path="../uploads/${doc.document_path}">
+                                    Supprimer
+                                </button>
+                            </td>
+                        </tr>
+                    `;
                     documentsTable.innerHTML += row;
                 });
-            }
-        };
-        xhr.send();
+            })
+            .catch(error => console.error("Erreur lors du chargement des documents :", error));
     };
 
     // Charger les champs dynamiques
     const loadFields = (typeId) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `../assets/php/get_document_fields.php?type=${typeId}`, true);
-        xhr.onload = () => {
-            if (xhr.status === 200) {
-                const fields = JSON.parse(xhr.responseText);
-                fieldsFilters.innerHTML = ""; // Clear previous filters
+        fetch(`../assets/php/get_document_fields.php?type=${typeId}`)
+            .then(response => response.json())
+            .then(fields => {
+                fieldsFilters.innerHTML = ""; // Effacer les filtres précédents
                 fields.forEach(field => {
                     const filter = document.createElement("div");
                     filter.innerHTML = `
                         <label for="field_${field.id}">${field.name}</label>
-                        <select id="field_${field.id}" data-field-id="${field.id}" >
+                        <select id="field_${field.id}" data-field-id="${field.id}">
                             <option value="">Tous</option>
                         </select>
                     `;
@@ -72,18 +69,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Charger les valeurs pour chaque champ
                     loadFieldValues(field.id);
                 });
-            }
-        };
-        xhr.send();
+            })
+            .catch(error => console.error("Erreur lors du chargement des champs :", error));
     };
 
     // Charger les valeurs d'un champ
     const loadFieldValues = (fieldId) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `../assets/php/get_field_values.php?field=${fieldId}`, true);
-        xhr.onload = () => {
-            if (xhr.status === 200) {
-                const values = JSON.parse(xhr.responseText);
+        fetch(`../assets/php/get_field_values.php?field=${fieldId}`)
+            .then(response => response.json())
+            .then(values => {
                 const select = document.querySelector(`#field_${fieldId}`);
                 values.forEach(value => {
                     const option = document.createElement("option");
@@ -102,9 +96,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                     loadDocuments(typeSelect.value, filters);
                 });
-            }
-        };
-        xhr.send();
+            })
+            .catch(error => console.error("Erreur lors du chargement des valeurs :", error));
     };
 
     // Événements
@@ -118,42 +111,33 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Gestion de la suppression
+    documentsTable.addEventListener("click", (e) => {
+        if (e.target.classList.contains("delete-btn")) {
+            if (confirm("Êtes-vous sûr de vouloir supprimer ce document ?")) {
+                const documentId = e.target.dataset.id;
+                const documentPath = e.target.dataset.path;
+
+                fetch("../assets/php/delete_document.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `document_id=${encodeURIComponent(documentId)}&document_path=${encodeURIComponent(documentPath)}`
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Document supprimé avec succès !");
+                            loadDocuments(typeSelect.value); // Recharger les documents
+                        } else {
+                            alert("Erreur : " + data.message);
+                        }
+                    })
+                    .catch(error => console.error("Erreur lors de la suppression :", error));
+            }
+        }
+    });
+
     // Chargement initial
     loadTypes();
     loadDocuments();
 });
-
-
-
-
-
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('delete-btn')) {
-        if (confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) {
-            const documentId = e.target.dataset.id;
-            const documentPath = e.target.dataset.path;
-
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '../assets/php/delete_document.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        alert(response.message);
-
-                        if (response.success) {
-                            location.reload(); // Actualise le tableau
-                        }
-                    } catch (error) {
-                        alert("Erreur de réponse du serveur.");
-                        console.error("Erreur JSON :", error, xhr.responseText);
-                    }
-                }
-            };
-            xhr.send(`document_id=${encodeURIComponent(documentId)}&document_path=${encodeURIComponent(documentPath)}`);
-        }
-    }
-});
-
-
