@@ -1,0 +1,6 @@
+[2025-04-14 14:15:49] Admin ID: 1 | Action: ADD_ADMIN | Details: Ajout de l'administrateur: Anis
+[2025-04-14 14:17:28] Admin ID: 1 | Action: DELETE_ADMIN | Details: Suppression de l'administrateur: test
+[2025-04-14 14:20:06] Admin ID: 1 | Action: UPDATE_ADMIN | Details: Modification de l'administrateur: Anis -> Anis
+[2025-04-14 14:52:55] Admin ID: 3 | Action: ADD_ADMIN | Details: Ajout de l'administrateur: chach
+[2025-04-14 14:54:55] Admin ID: 3 | Action: DELETE_ADMIN | Details: Suppression de l'administrateur: chach
+[2025-04-14 14:55:06] Admin ID: 3 | Action: ADD_ADMIN | Details: Ajout de l'administrateur: chach avec le rôle: bibliothecaire
